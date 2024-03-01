@@ -81,7 +81,7 @@ class VS2M(object):
             net = fcn(self.image_clean.shape[2], self.image_clean.shape[2], num_hidden=[128, 256, 256, 128]).type(data_type)
             self.parameters = self.parameters + [p for p in net.parameters()]
             self.mask_net.append(net)
-        for i in range(self.rank):
+        for i in range(1):
             net=ESSA(self.image_clean.shape[2],self.image_clean.shape[1],1).type(data_type)
             self.parameters = self.parameters + [p for p in net.parameters()]
             self.ESSA_net.append(net)
@@ -161,9 +161,7 @@ class VS2M(object):
             
         self.mask_out = out.squeeze(1)
         M = self.ESSA_net_inputs
-        out=self.ESSA_net[0](M)
-        for i in range(1, self.now_rank):
-            out = torch.cat((out, self.ESSA_net[i](M)), 0)
+        out=self.ESSA_net[0](M).unsqueeze(0)
         
         out = out[:, :, :self.image_clean.shape[0], :self.image_clean.shape[1]]
     
